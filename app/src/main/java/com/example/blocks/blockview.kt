@@ -9,7 +9,7 @@ import android.view.View
 
 
 class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
-    var num = 0
+    var num = 20
     var turn = 2
     var paint:Paint
     var partsbox = Array(7, {i -> Array(7, {i -> 0})})
@@ -65,14 +65,16 @@ class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
         }
     }
     fun makeblock(Colors: Int){
+        num++
+        if(num > 20) num = 0
         turn = Colors
+        while(!parts[turn - 2][num].getUsable()) num++
         for(i in 0..6) {
             for (j in 0..6) {
                 partsbox[i][j] = change_color(parts[turn - 2][num].data[i][j], turn)
             }
         }
-        num++
-        if(num > 20) num = 0
+
         invalidate()
     }
 

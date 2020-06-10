@@ -122,14 +122,14 @@ fun check_able_set(touchX:Int, touchY:Int, num: Int):Boolean{
             }
         }
     }
-    if(count == 0){
-        setblock(touchX, touchY, num)
-        return true
-    }
+    if(count == 0) return true
     else return false
 }
 
-fun setblock(touchX:Int, touchY:Int, num: Int){
+fun setblock(pointX:Float, pointY:Float, num: Int){
+    val barcorretion = 65
+    val touchX = ((pointX - corretion) / arealine).toInt() - 1
+    val touchY = ((pointY - corretion - barcorretion) / arealine).toInt() - 1
     for(i in presentParts.startpointLine..presentParts.endpointLine){
         for(j in 0..6){
             var tmp =  box[touchY + i - presentParts.startpointLine + 3][touchX + j - presentParts.startpointRow + 3]

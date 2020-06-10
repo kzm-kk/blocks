@@ -1,10 +1,10 @@
 package com.example.blocks
 
+import android.content.DialogInterface
 import android.graphics.Color
-import android.graphics.Path
 import android.os.Bundle
 import android.view.MotionEvent
-import android.view.View.OnTouchListener
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -16,6 +16,9 @@ class MainActivity : AppCompatActivity() {
     lateinit var myView: boardview
     var turn = 2
     var Opened = false
+    lateinit var alertDialog:AlertDialog
+    var play1_playable = true
+    var play2_playable = true
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,6 +29,15 @@ class MainActivity : AppCompatActivity() {
         button.setOnClickListener{
             /*var hogeFragment = getSupportFragmentManager().findFragmentByTag("tag")
             if(hogeFragment != null)finish_fragment(hogeFragment)*/
+            alertDialog = AlertDialog.Builder(this@MainActivity)
+                .setTitle("自分の番をスキップしますか？")
+                .setPositiveButton(
+                    "はい",
+                    DialogInterface.OnClickListener { dialog, which -> skip_player(turn) })
+                .setNegativeButton(
+                    "いいえ",
+                    DialogInterface.OnClickListener { dialog, which -> alertDialog.dismiss() })
+                .show()
 
         }
     }
@@ -42,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             if(Opened && parts[turn - 2][presentParts.kinds].getUsable()){
                 if(myView.check_dup_cyan(pointX, pointY, turn - 2)){
+                    myView.setblock(pointX, pointY, turn - 2)
                     Opened = false
                     presentParts.setUsable(false)
                     if(turn == 2)turn = 3
@@ -61,6 +74,16 @@ class MainActivity : AppCompatActivity() {
         //container.setOnTouchListener(fragment01)
         fragmentTransaction.replace(R.id.container, fragment01, "tag")
         fragmentTransaction.commit()
+    }
+
+    fun skip_player(turn:Int){
+        if(turn == 2) {
+            play1_playable = false
+            //turn = 3
+        } else {
+            play2_playable = false
+            //turn = 2
+        }
     }
 
     fun finish_fragment(flag:Fragment){
