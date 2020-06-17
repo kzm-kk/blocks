@@ -8,7 +8,11 @@ class present_parts() {
     var startpointRow = -1
     var startpointLine = -1
     var endpointLine = 0
-    fun changekind(num:Int, array: Array<Array<Int>>){
+    var radian = 0
+    var reverse = false
+    fun changekind(num:Int, array: Array<Array<Int>>, rad:Int, rev:Boolean){
+        radian = rad
+        reverse = rev
         startpointRow = -1
         startpointLine = -1
         endpointLine = 0

@@ -38,27 +38,35 @@ class partsfragment: Fragment()/*,View.OnTouchListener*/ {
             if(tmp != null)num = Integer.parseInt(tmp)
         }
         textView2.setTextColor(Color.WHITE)
-        textView2.setText(""+ presentParts.cyan_count)
         button2.setOnClickListener {
             view2.makeblock(num)
+            D_change()
         }
 
         switchLR.setOnClickListener {
             view2.LRinverter()
+            D_change()
         }
         switchTB.setOnClickListener {
             view2.TBinverter()
+            D_change()
         }
 
         spinL.setOnClickListener {
             view2.spinLeft()
+            D_change()
         }
         spinR.setOnClickListener {
             view2.spinRight()
+            D_change()
         }
 
         view2.makeblock(num)
+        D_change()
+    }
 
+    fun D_change(){
+        textView2.setText(""+ presentParts.startpointLine+":"+ presentParts.startpointRow)
     }
 
     /*override fun onTouch(v: View?, event: MotionEvent?): Boolean {

@@ -12,6 +12,8 @@ class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
     var num = 20
     var turn = 2
     var paint:Paint
+    var radian = 0
+    var reverse = false
     var partsbox = Array(7, {i -> Array(7, {i -> 0})})
     var tmpbox = Array(7, {i -> Array(7, {i -> 0})})
     init {
@@ -51,7 +53,7 @@ class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
             }
         }
         if(parts[turn - 2][num].getUsable()){
-            presentParts.changekind(num, partsbox)
+            presentParts.changekind(num, partsbox, radian, reverse)
             presentParts.setUsable(true)
         }
     }
@@ -74,7 +76,8 @@ class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
                 partsbox[i][j] = change_color(parts[turn - 2][num].data[i][j], turn)
             }
         }
-
+        radian = 0
+        reverse = false
         invalidate()
     }
 
@@ -95,6 +98,7 @@ class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
                 partsbox[i][j] = tmpbox[i][j]
             }
         }
+        reverse = !reverse
         invalidate()
     }
 
@@ -109,6 +113,9 @@ class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
                 partsbox[i][j] = tmpbox[i][j]
             }
         }
+        reverse = !reverse
+        radian += 180
+        if(radian >= 360) radian -= 360
         invalidate()
     }
 
@@ -123,6 +130,8 @@ class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
                 partsbox[i][j] = tmpbox[i][j]
             }
         }
+        radian += 90
+        if(radian >= 360) radian -= 360
         invalidate()
     }
 
@@ -137,6 +146,8 @@ class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
                 partsbox[i][j] = tmpbox[i][j]
             }
         }
+        radian -= 90
+        if(radian < 0) radian += 360
         invalidate()
     }
 }

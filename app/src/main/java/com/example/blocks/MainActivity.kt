@@ -53,8 +53,9 @@ class MainActivity : AppCompatActivity() {
             }
         } else {
             if(Opened && parts[turn - 2][presentParts.kinds].getUsable()){
-                if(myView.check_dup_cyan(pointX, pointY, turn - 2)){
-                    myView.setblock(pointX, pointY, turn - 2)
+                if(myView.recheck_able_set(pointX, pointY, turn)){//myView.check_dup_cyan(pointX, pointY, turn - 2)){
+                    //myView.setblock(pointX, pointY, turn - 2)
+                    myView.setblock2(turn)
                     Opened = false
                     presentParts.setUsable(false)
                     if(turn == 2)turn = 3
