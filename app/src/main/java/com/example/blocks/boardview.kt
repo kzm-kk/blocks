@@ -20,7 +20,6 @@ class boardview(context: Context?,attrs: AttributeSet?) :
     var touchY = 0
     var play1_begin = true
     var play2_begin = true
-    var turn = 2
 
     //表示エリア14×14,エラー回避のために上下左右に3つずつ追加して20×20
     var box = Array(linesize, {i -> Array(rowsize, {i -> 9})})
@@ -29,6 +28,7 @@ class boardview(context: Context?,attrs: AttributeSet?) :
         Array(2, {i -> Array(21, {i ->Array(8, {i ->Array(linesize, {i -> Array(rowsize, {i -> true})})})})})
     var box_block = present_parts()
     var tmpbox = Array(7, {i -> Array(7, {i -> 0})})
+
     init {
         paint = Paint()
         for(i in 3..16){
@@ -44,7 +44,6 @@ class boardview(context: Context?,attrs: AttributeSet?) :
         canvas.drawColor(Color.BLACK)
         for(i in 0..13){
             for(j in 0..13){
-                set_state(turn, i + 3, j + 3)
                 colorselect(paint, box[i + 3][j + 3])
                 paint.strokeWidth = 2f
                 paint.style = Paint.Style.FILL_AND_STROKE
@@ -67,14 +66,15 @@ class boardview(context: Context?,attrs: AttributeSet?) :
                 )
 
                 var tmp = 0
-                if(box_state[turn - 2][3][0][i+3][j+3]) tmp = 1
+                if(box_state[1][1][0][i+3][j+3]) tmp = 1
                 paint.textSize = 20F
                 canvas.drawText(""+tmp,
-                    arealine * j.toFloat() + corretion,
-                    arealine * i.toFloat() + corretion,paint)
+                    arealine * (j + 0.5).toFloat() + corretion,
+                    arealine * (i + 0.5).toFloat() + corretion,paint)
             }
         }
     }
+
 
     fun colorselect(paint:Paint, num:Int){
         when {
@@ -86,46 +86,62 @@ class boardview(context: Context?,attrs: AttributeSet?) :
         }
     }
 
-    fun set_state(turn: Int, line: Int, row: Int){
+    fun set_state(turn: Int):Boolean{
+        var flag_able = false
         var rev = false
         var rad = 0
         for(h in 0..20) {
-            for(i in 0..7)
-                box_state[turn - 2][h][i][line][row] = false
-            if(box[line][row] == 0 && parts[turn - 2][h].getUsable()){
+            if(parts[turn - 2][h].getUsable()){
+                rev = false
+                rad = 0
                 for(i in 0..6){
                     for(j in 0..6){
                         box_block.data[i][j] = parts[turn - 2][h].data[i][j]
                     }
                 }
                 for (i in 0..7) {
-                    for(j in 0..6) {
-                        for (k in 0..6) {
-                            if(i == 4) tmpbox[j][k] = box_block.data[j][6 - k]
-                            else tmpbox[6 - k][j] = box_block.data[j][k]
+                    if(i != 0) {
+                        for (j in 0..6) {
+                            for (k in 0..6) tmpbox[6 - k][j] = box_block.data[j][k]
                         }
-                    }
-                    for(j in 0..6) {
-                        for (k in 0..6) {
-                            box_block.data[j][k] = tmpbox[j][k]
+                        for (j in 0..6) {
+                            for (k in 0..6) box_block.data[j][k] = tmpbox[j][k]
                         }
-                    }
-                    rad += 90
-                    if(rad >= 360) rad -= 360
-                    if(i > 3) rev = true
-                    box_block.changekind(h, box_block.data, rad, rev)
-                    box_state[turn - 2][h][i][line][row] = check_dup_cyan2(turn, line, row)//check_dup_cyan2(turn, line, row)
-                    if(!play1_begin && !play2_begin) {
-                        if(box[line][row] < 2) box[line][row] = 0
-                            if (box_state[turn - 2][7][2][line][row]) {
-                                box[line][row] = 1
-                                Log.v("tag", "line:" + line + "row:" + row + "T/F:T")
+                        if(i == 4){
+                            for (j in 0..6) {
+                                for (k in 0..6) tmpbox[j][k] = box_block.data[j][6 - k]
                             }
+                            for (j in 0..6) {
+                                for (k in 0..6) box_block.data[j][k] = tmpbox[j][k]
+                            }
+
+                        }
+                        rad += 90
+                        if(rad >= 360) rad -= 360
+                        if(i > 3) rev = true
+                    }
+                    box_block.changekind(h, box_block.data, rad, rev)
+                    for(j in 3..16){
+                        for(k in 3..16){
+                            if(box[j][k] == 0)box_state[turn - 2][h][i][j][k] = check_dup_cyan3(turn, j, k)
+                            else box_state[turn - 2][h][i][j][k] = false
+                            if(box_state[turn - 2][h][i][j][k]) flag_able = true
+                        }
+                    }
+                }
+            } else {
+                for(i in 0..7) {
+                    for (j in 3..16) {
+                        for (k in 3..16) {
+                            box_state[turn - 2][h][i][j][k] = false
+                        }
                     }
                 }
             }
         }
+        return flag_able
     }
+
 
     fun check_dup_cyan2(turn: Int, line: Int, row: Int):Boolean{
         var non_cyan_count = 0
@@ -138,13 +154,13 @@ class boardview(context: Context?,attrs: AttributeSet?) :
                 for (j in 0..6) {
                         val now_row = differ_row + j
                         val tmp = box_block.data[i][j]
-                        if (now_row > 19 || now_line > 19) {
-                            break
-                        }
-                        if (tmp == 1) {
-                            non_cyan_count +=
-                                dup_cyan_color2(now_line, now_row, turn)
-                        }
+                    if (now_row > 19 || now_line > 19) {
+                        break
+                    }
+                    if (tmp == 1) {
+                        non_cyan_count +=
+                            dup_cyan_color2(now_line, now_row, turn)
+                    }
                 }
                 if (now_line > 19) {
                     break
@@ -177,7 +193,6 @@ class boardview(context: Context?,attrs: AttributeSet?) :
                     var content = box[now_line][now_row]
                     if(content == 1) content = 0
                     if (tmp < 2) tmp = 0
-                    //if (tmp < 2 && content == turn) tmp = 0 //同じ色の時に重ねられる
                     if (content != (turn) && tmp > 5) content = 0 //別の色と重複不可箇所は重ねてオーケー
                     count += content * tmp
                 }
@@ -185,52 +200,65 @@ class boardview(context: Context?,attrs: AttributeSet?) :
             now_line++
         }
         if(count == 0) {
-            //if(!play1_begin && !play2_begin)box[line][row] = 1
             return true
         }
         else return false
     }
 
-    fun check_able_set3(turn: Int, line: Int, row:Int):Boolean{
-        var count = 0
+    fun check_dup_cyan3(turn: Int, line: Int, row: Int):Boolean{
         var non_cyan_count = 0
         var flag_able = false
-        val differ_line = line - (box_block.startpointLine + 1)
-        val differ_row = row - (box_block.startpointRow + 1)
-        var now_line = differ_line + box_block.startpointLine
-        if(differ_line >= 0 && differ_row >= 0) {
-            for (i in box_block.startpointLine..box_block.endpointLine) {
-                for (j in 0..6) {
-                    val now_row = differ_row + j
-                    var tmp = box_block.data[i][j]
-                    if (now_line < 3 || now_line > 16 || now_row < 3 || now_row > 16) {
-                        if (tmp > 5 || tmp < 2) count += 0
-                        else count += 1
-                    } else {
-                        var content = box[now_line][now_row]
-                        if (tmp == 1) {
-                            if(content != turn) non_cyan_count ++
-                        }
-                        if (content == 1) content = 0
-                        if (tmp < 2) tmp = 0
-                        //if (tmp < 2 && content == turn) tmp = 0 //同じ色の時に重ねられる
-                        if (content != (turn) && tmp > 5) content = 0 //別の色と重複不可箇所は重ねてオーケー
-                        count += content * tmp
+        var flag_break = false
+        val differ_line = line - (box_block.line_block1)//ok
+        val differ_row = row - (box_block.row_block1)//ok
+        for (i in box_block.topEdge..box_block.bottomEdge) {
+            for (j in box_block.leftEdge..box_block.rightEdge) {
+                val now_line = differ_line + i
+                val now_row = differ_row + j
+                val tmp = box_block.data[i][j]
+                if (now_row > 19 || now_line > 19 || now_row < 0 || now_line < 0) {
+                    if (tmp < 6 && tmp > 1){
+                        flag_break = true
+                        break
                     }
+                    else if (tmp == 1) non_cyan_count++
+                } else {
+                    //if (tmp == 1 && box[now_line][now_row] != turn) non_cyan_count++
+                    if(tmp == 1) non_cyan_count += dup_cyan_color2(now_line, now_row, turn)
                 }
-                now_line++
             }
-            if (count == 0) {
-                if (non_cyan_count == box_block.cyan_count) {
-                    if (play1_begin || play2_begin) {
-                        flag_able = true
-                    } else {
-                        flag_able = false
-                    }
-                }
-            } else flag_able = false
+            if (flag_break) break
+        }
+        if(play1_begin || play2_begin) flag_able = check_able_set3(turn, differ_line, differ_row, line, row)
+        else {
+            if (non_cyan_count >= box_block.cyan_count) flag_able = false
+            else if(flag_break) flag_able = false
+            else flag_able = check_able_set3(turn, differ_line, differ_row, line, row)
         }
         return flag_able
+    }
+
+    fun check_able_set3(turn: Int, Dline: Int, Drow:Int, line: Int, row: Int):Boolean{
+        var count = 0
+        for (i in box_block.topEdge..box_block.bottomEdge) {
+            for (j in box_block.leftEdge..box_block.rightEdge) {
+                val now_line = Dline + i
+                val now_row = Drow + j
+                var tmp = box_block.data[i][j]
+                if (now_line < 3 || now_line > 16 || now_row < 3 || now_row > 16) {
+                    if (tmp > 1 && tmp < 6) count++
+                } else {
+                    var content = box[now_line][now_row]
+                    if (tmp < 2) tmp = 0
+                    if (content != turn && tmp > 5) content = 0 //別の色と重複不可箇所は重ねてオーケー
+                    count += content * tmp
+                }
+            }
+        }
+        if(count == 0) {
+            return true
+        }
+        else return false
     }
 
     fun dup_cyan_color2(line:Int, row:Int, num: Int):Int{
@@ -244,9 +272,32 @@ class boardview(context: Context?,attrs: AttributeSet?) :
         touchY = ((pointY - corretion - barcorretion) / arealine).toInt() + 3
         var index_2 = presentParts.radian / 90
         if(presentParts.reverse) index_2 += 4
-            if(box_state[num - 2][presentParts.kinds][index_2][touchY][touchX]) flag = true
-            Log.v("debuglog", "kinds"+ presentParts.kinds+" direct"+index_2+" line"+touchY + " row"+touchX)
+        if(box_state[num][presentParts.kinds][index_2][touchY][touchX]) flag = true
+        //Log.v("debuglog", "kinds"+ presentParts.kinds+" direct"+index_2+" line"+touchY + " row"+touchX)
+        //Log.v("debug", "kinds:"+ presentParts.kinds+ " line"+(touchY - presentParts.line_block1)
+        //       + " row"+(touchX - presentParts.row_block1))
         return flag
+    }
+
+    fun setblock3(num: Int){
+        val differ_line = touchY - presentParts.line_block1
+        val differ_row = touchX - presentParts.row_block1
+        for (i in presentParts.topEdge..presentParts.bottomEdge) {
+            for (j in presentParts.leftEdge..presentParts.rightEdge) {
+                val now_line = differ_line + i
+                val now_row = differ_row + j
+                var tmp = box[now_line][now_row]
+                if (presentParts.data[i][j] < 2 || presentParts.data[i][j] > 5)
+                    box[now_line][now_row] = Math.max(tmp, 0)
+
+                else box[now_line][now_row] = Math.max(tmp, presentParts.data[i][j])
+            }
+        }
+
+        if(num == 2 && play1_begin)play1_begin = false
+        else if(num == 3 && play2_begin) play2_begin = false
+        parts[num - 2][presentParts.kinds].setUsable(false)
+        invalidate()
     }
 
     fun setblock2(num: Int){
@@ -264,13 +315,11 @@ class boardview(context: Context?,attrs: AttributeSet?) :
             }
         }
         if (num == 2){
-            turn = 3
             play1_begin = false
         } else if (num == 3) {
-            turn = 2
             play2_begin = false
         }
-        presentParts.state_unusable(num - 2)
+        parts[num - 2][presentParts.kinds].setUsable(false)
         invalidate()
     }
 
@@ -298,7 +347,7 @@ fun check_dup_cyan(pointX:Float, pointY:Float, num:Int):Boolean{
             flag_able = false
         }
     } else flag_able = check_able_set(touchX, touchY, num)
-    if(!presentParts.getUsable()) flag_able = false
+    //if(!presentParts.getUsable()) flag_able = false
     return flag_able
 }
 
@@ -344,13 +393,11 @@ fun setblock(pointX:Float, pointY:Float, num: Int){
     if((num + 2) == 2)play1_begin = false
     else if((num + 2) == 3)play2_begin = false
     if (num == 2){
-        turn = 3
         play1_begin = false
     } else if (num == 3) {
-        turn = 2
         play2_begin = false
     }
-    presentParts.state_unusable(num)
+    parts[num - 2][presentParts.kinds].setUsable(false)
     invalidate()
 }
 
@@ -367,6 +414,20 @@ fun setblock(pointX:Float, pointY:Float, num: Int){
             }
         }
         return count
+    }
+
+    fun restart(){
+        for(i in 3..16){
+            for(j in 3..16){
+                box[i][j] = 0
+            }
+        }
+        for(i in 0..1){
+            for(j in 0..20) parts[i][j].setUsable(true)
+        }
+        play1_begin = true
+        play2_begin = true
+        invalidate()
     }
 
 }

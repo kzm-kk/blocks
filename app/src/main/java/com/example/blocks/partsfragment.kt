@@ -66,7 +66,7 @@ class partsfragment: Fragment()/*,View.OnTouchListener*/ {
     }
 
     fun D_change(){
-        textView2.setText(""+ presentParts.startpointLine+":"+ presentParts.startpointRow)
+        textView2.setText(""+ presentParts.line_block1+":"+ presentParts.row_block1)
     }
 
     /*override fun onTouch(v: View?, event: MotionEvent?): Boolean {
