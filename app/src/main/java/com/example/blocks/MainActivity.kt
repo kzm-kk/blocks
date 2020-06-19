@@ -150,7 +150,6 @@ class MainActivity : AppCompatActivity() {
         red_block = 0
         blue_block = 0
         turn = 2
-        parts = Array(2,{Array(21,{ i -> blokus(i)})})
         myView.restart()
         var hogeFragment = getSupportFragmentManager().findFragmentByTag("tag")
         if(hogeFragment != null)finish_fragment(hogeFragment)

@@ -417,13 +417,19 @@ fun setblock(pointX:Float, pointY:Float, num: Int){
     }
 
     fun restart(){
-        for(i in 3..16){
-            for(j in 3..16){
-                box[i][j] = 0
-            }
-        }
+
         for(i in 0..1){
-            for(j in 0..20) parts[i][j].setUsable(true)
+            for(j in 0..20){
+                parts[i][j].setUsable(true)
+                for(k in 0..7){
+                    for(l in 3..16){
+                        for(m in 3..16){
+                            box[l][m] = 0
+                            box_state[i][j][k][l][m] = true
+                        }
+                    }
+                }
+            }
         }
         play1_begin = true
         play2_begin = true
