@@ -88,9 +88,7 @@ class MainActivity : AppCompatActivity() {
             }
         } else {
             if(Opened && parts[turn - 2][presentParts.kinds].getUsable()){
-                if(myView.recheck_able_set(pointX, pointY, turn - 2)){//myView.check_dup_cyan(pointX, pointY, turn - 2)){
-                    //myView.setblock(pointX, pointY, turn - 2)
-                    //myView.setblock2(turn)
+                if(myView.recheck_able_set(pointX, pointY, turn - 2)){
                     myView.setblock3(turn)
                     Opened = false
                     presentParts.setUsable(false)
@@ -135,6 +133,7 @@ class MainActivity : AppCompatActivity() {
             else winner = "player1"
             alertDialog = AlertDialog.Builder(this@MainActivity)
                 .setTitle(winner+" wins " +Math.abs(minus) + "point")
+                .setCancelable(false)
                 .setPositiveButton(
                     "OK",
                     DialogInterface.OnClickListener { dialog, which -> alertDialog.dismiss() })
