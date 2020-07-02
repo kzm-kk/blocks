@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.view.MotionEvent
+import android.view.MotionEvent.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -17,7 +18,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity() {
     lateinit var myView: boardview
     var turn = 2
-    var Opened = false
+    var Opened = true
     lateinit var alertDialog:AlertDialog
     var play1_playable = true
     var play2_playable = true
@@ -37,16 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         myView = findViewById(R.id.view1)
         button.setOnClickListener{
-            alertDialog = AlertDialog.Builder(this@MainActivity)
-                .setTitle("自分の番をスキップしますか？")
-                .setPositiveButton(
-                    "はい",
-                    DialogInterface.OnClickListener { dialog, which -> skip_player(turn) })
-                .setNegativeButton(
-                    "いいえ",
-                    DialogInterface.OnClickListener { dialog, which -> alertDialog.dismiss() })
-                .show()
-
+            //auto_play()
         }
         button3.setOnClickListener {
             alertDialog = AlertDialog.Builder(this@MainActivity)
@@ -60,22 +52,23 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
         Handler().postDelayed({ turngo() }, delaytime.toLong())
+        partsExpansion()
     }
 
     fun turngo(){
         runnable = object : Runnable {
             override fun run() {
-                action()
+                running()
             }
         }
         handler.post(runnable)
     }
 
-    fun action(){
+    fun running(){
         while(timing == 1){
             timing = 0
-            play1_playable = myView.set_state(2)
-            play2_playable = myView.set_state(3)
+            if(turn == 2)play1_playable = myView.set_state(2)
+            if(turn == 3)play2_playable = myView.set_state(3)
             declaration_skip()
             result(play1_playable, play2_playable)
         }
@@ -85,24 +78,21 @@ class MainActivity : AppCompatActivity() {
         textView.setTextColor(Color.WHITE)
         val pointX = event!!.getX()
         val pointY = event!!.getY()
-        if(pointY < 1130) {
-            if(Opened && parts[turn - 2][presentParts.kinds].getUsable()){
-                if(myView.recheck_able_set(pointX, pointY, turn - 2)){
-                    myView.setblock3(turn)
-                    Opened = false
-                    presentParts.setUsable(false)
-                    if(turn == 2 && play2_playable) turn = 3
-                    else if(turn == 3 && play1_playable)turn = 2
-                    timing = 1
-                    Handler().postDelayed({ turngo() }, delaytime.toLong())
+        if (event.action == ACTION_UP) {
+            if (pointY < 1130) {
+                if (parts[turn - 2][presentParts.kinds].getUsable()) {
+                    if (Opened && myView.recheck_able_set(pointX, pointY, turn - 2)) {
+                        Opened = false
+                        myView.setblock3(turn)
+                        presentParts.setUsable(false)
+                        if (turn == 2 && play2_playable) turn = 3
+                        else if (turn == 3 && play1_playable) turn = 2
+                        timing = 1
+                        Handler().postDelayed({ turngo() }, delaytime.toLong())
+                        partsExpansion()
+                    }
                 }
             }
-        } else {
-            if(!Opened) {
-                Opened = true
-                partsExpansion()
-            }
-
         }
         red_block = myView.count_block(2)
         blue_block = myView.count_block(3)
@@ -111,6 +101,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun partsExpansion(){
+        Opened = true
         val fragment01 = partsfragment().newInstance(turn.toString())
         val fragmentManager: FragmentManager = supportFragmentManager
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
@@ -131,9 +122,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun declaration_skip(){
-        if(play1_playable != play1_preflag)
+        if((play1_playable != play1_preflag) && !play1_playable)
             Toast.makeText(applicationContext, "player1スキップ", Toast.LENGTH_SHORT).show()
-        if(play2_playable != play2_preflag)
+        if((play2_playable != play2_preflag) && !play2_playable)
             Toast.makeText(applicationContext, "player2スキップ", Toast.LENGTH_SHORT).show()
         play1_preflag = play1_playable
         play2_preflag = play2_playable
@@ -155,17 +146,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun auto_play(){
+        /*if (parts[turn - 2][presentParts.kinds].getUsable()) {
+            if (Opened && myView.recheck_able_set(pointX, pointY, turn - 2)) {
+                Opened = false
+                myView.setblock3(turn)
+                presentParts.setUsable(false)
+                if (turn == 2 && play2_playable) turn = 3
+                else if (turn == 3 && play1_playable) turn = 2
+                timing = 1
+                Handler().postDelayed({ turngo() }, delaytime.toLong())
+                partsExpansion()
+            }
+        }*/
+
+red_block = myView.count_block(2)
+blue_block = myView.count_block(3)
+textView.setText("red:" + red_block.toString() + "blue:" + blue_block.toString())
+    }
+
     fun restart_game(){
         play1_playable = true
         play2_playable = true
-        Opened = false
         timing = 1
         red_block = 0
         blue_block = 0
         turn = 2
+        partsExpansion()
+        textView.setText("red:" + red_block.toString() + "blue:" + blue_block.toString())
         myView.restart()
-        var hogeFragment = getSupportFragmentManager().findFragmentByTag("tag")
-        if(hogeFragment != null)finish_fragment(hogeFragment)
+        //var hogeFragment = getSupportFragmentManager().findFragmentByTag("tag")
+        //if(hogeFragment != null)finish_fragment(hogeFragment)
     }
 
     fun finish_fragment(flag:Fragment){

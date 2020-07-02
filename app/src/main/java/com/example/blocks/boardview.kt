@@ -106,6 +106,7 @@ class boardview(context: Context?,attrs: AttributeSet?) :
                             for (k in 0..6) box_block.data[j][k] = tmpbox[j][k]
                         }
                         if(i == 4){
+                            rev = true
                             for (j in 0..6) {
                                 for (k in 0..6) tmpbox[j][k] = box_block.data[j][6 - k]
                             }
@@ -116,7 +117,6 @@ class boardview(context: Context?,attrs: AttributeSet?) :
                         }
                         rad += 90
                         if(rad >= 360) rad -= 360
-                        if(i > 3) rev = true
                     }
                     box_block.changekind(h, box_block.data, rad, rev)
                     for(j in 3..16){

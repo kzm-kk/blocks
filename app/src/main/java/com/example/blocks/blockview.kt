@@ -24,7 +24,7 @@ class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
         super.onDraw(canvas)
         val arealine = 70
         val corretion = 10F
-        val topbottom_corretion = 50
+        val topbottom_corretion = 20
         val leftright_corretion = 250
         canvas.drawColor(Color.BLUE)
         for(i in 0..6){
@@ -70,7 +70,10 @@ class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
         num++
         if(num > 20) num = 0
         turn = Colors
-        while(!parts[turn - 2][num].getUsable()) num++
+        while(!parts[turn - 2][num].getUsable()){
+            num++
+            if(num > 20) num = 0
+        }
         for(i in 0..6) {
             for (j in 0..6) {
                 partsbox[i][j] = change_color(parts[turn - 2][num].data[i][j], turn)
