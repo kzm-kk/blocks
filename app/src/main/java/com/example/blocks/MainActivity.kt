@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.view.MotionEvent
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -20,6 +21,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var alertDialog:AlertDialog
     var play1_playable = true
     var play2_playable = true
+    var play1_preflag = true
+    var play2_preflag = true
     private val handler = Handler()
     private var runnable: Runnable? = null
     var delaytime = 1500
@@ -73,6 +76,7 @@ class MainActivity : AppCompatActivity() {
             timing = 0
             play1_playable = myView.set_state(2)
             play2_playable = myView.set_state(3)
+            declaration_skip()
             result(play1_playable, play2_playable)
         }
     }
@@ -81,12 +85,7 @@ class MainActivity : AppCompatActivity() {
         textView.setTextColor(Color.WHITE)
         val pointX = event!!.getX()
         val pointY = event!!.getY()
-        if(pointY > 1130) {
-            if(!Opened) {
-                Opened = true
-                partsExpansion()
-            }
-        } else {
+        if(pointY < 1130) {
             if(Opened && parts[turn - 2][presentParts.kinds].getUsable()){
                 if(myView.recheck_able_set(pointX, pointY, turn - 2)){
                     myView.setblock3(turn)
@@ -98,6 +97,12 @@ class MainActivity : AppCompatActivity() {
                     Handler().postDelayed({ turngo() }, delaytime.toLong())
                 }
             }
+        } else {
+            if(!Opened) {
+                Opened = true
+                partsExpansion()
+            }
+
         }
         red_block = myView.count_block(2)
         blue_block = myView.count_block(3)
@@ -123,6 +128,15 @@ class MainActivity : AppCompatActivity() {
             play2_playable = false
             turn = 2
         }
+    }
+
+    fun declaration_skip(){
+        if(play1_playable != play1_preflag)
+            Toast.makeText(applicationContext, "player1スキップ", Toast.LENGTH_SHORT).show()
+        if(play2_playable != play2_preflag)
+            Toast.makeText(applicationContext, "player2スキップ", Toast.LENGTH_SHORT).show()
+        play1_preflag = play1_playable
+        play2_preflag = play2_playable
     }
 
     fun result(player1:Boolean, player2: Boolean){

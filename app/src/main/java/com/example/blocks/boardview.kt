@@ -205,12 +205,14 @@ class boardview(context: Context?,attrs: AttributeSet?) :
         var flag = false
         touchX = ((pointX - corretion) / arealine).toInt() + 3
         touchY = ((pointY - corretion - barcorretion) / arealine).toInt() + 3
-        var index_2 = presentParts.radian / 90
-        if(presentParts.reverse) index_2 += 4
-        if(box_state[num][presentParts.kinds][index_2][touchY][touchX]) flag = true
-        //Log.v("debuglog", "kinds"+ presentParts.kinds+" direct"+index_2+" line"+touchY + " row"+touchX)
-        //Log.v("debug", "kinds:"+ presentParts.kinds+ " line"+(touchY - presentParts.line_block1)
-        //       + " row"+(touchX - presentParts.row_block1))
+        if(touchX < 20 || touchY < 20) {
+            var index_2 = presentParts.radian / 90
+            if (presentParts.reverse) index_2 += 4
+            if (box_state[num][presentParts.kinds][index_2][touchY][touchX]) flag = true
+            //Log.v("debuglog", "kinds"+ presentParts.kinds+" direct"+index_2+" line"+touchY + " row"+touchX)
+            //Log.v("debug", "kinds:"+ presentParts.kinds+ " line"+(touchY - presentParts.line_block1)
+            //       + " row"+(touchX - presentParts.row_block1))
+        }
         return flag
     }
 
