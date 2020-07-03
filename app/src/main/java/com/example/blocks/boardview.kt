@@ -71,6 +71,16 @@ class boardview(context: Context?,attrs: AttributeSet?) :
                 )
             }
         }
+        if(play1_begin){
+            paint.setColor(Color.RED)
+            paint.style = Paint.Style.FILL_AND_STROKE
+            canvas.drawCircle((75.5 * 4.5).toFloat(),(75.5 * 4.5).toFloat(),20F,paint)
+        }
+        if(play2_begin){
+            paint.setColor(Color.BLUE)
+            paint.style = Paint.Style.FILL_AND_STROKE
+            canvas.drawCircle((75.5 * 9.5).toFloat(),(75.5 * 9.5).toFloat(),20F,paint)
+        }
     }
 
 
@@ -115,8 +125,9 @@ class boardview(context: Context?,attrs: AttributeSet?) :
                             }
 
                         }
-                        rad += 90
-                        if(rad >= 360) rad -= 360
+                        rad = i % 4 * 90
+                        //rad += 90
+                        //if(rad >= 360) rad -= 360
                     }
                     box_block.changekind(h, box_block.data, rad, rev)
                     for(j in 3..16){
@@ -175,6 +186,7 @@ class boardview(context: Context?,attrs: AttributeSet?) :
 
     fun check_able_set3(turn: Int, Dline: Int, Drow:Int, line: Int, row: Int):Boolean{
         var count = 0
+        var flag = false
         for (i in box_block.topEdge..box_block.bottomEdge) {
             for (j in box_block.leftEdge..box_block.rightEdge) {
                 val now_line = Dline + i
@@ -184,14 +196,22 @@ class boardview(context: Context?,attrs: AttributeSet?) :
                     if (tmp > 1 && tmp < 6) count++
                 } else {
                     var content = box[now_line][now_row]
+                    if(play1_begin){
+                        if (now_line == 7 && now_row == 7 && tmp == 2) flag = true
+                    }
+                    if(play2_begin){
+                        if (now_line == 12 && now_row == 12 && tmp == 2) flag = true
+                    }
                     if (tmp < 2) tmp = 0
                     if (content != turn && tmp > 5) content = 0 //別の色と重複不可箇所は重ねてオーケー
                     count += content * tmp
                 }
+
             }
         }
         if(count == 0) {
-            return true
+            if(play1_begin || play2_begin) return flag
+            else return true
         }
         else return false
     }
@@ -209,9 +229,6 @@ class boardview(context: Context?,attrs: AttributeSet?) :
             var index_2 = presentParts.radian / 90
             if (presentParts.reverse) index_2 += 4
             if (box_state[num][presentParts.kinds][index_2][touchY][touchX]) flag = true
-            //Log.v("debuglog", "kinds"+ presentParts.kinds+" direct"+index_2+" line"+touchY + " row"+touchX)
-            //Log.v("debug", "kinds:"+ presentParts.kinds+ " line"+(touchY - presentParts.line_block1)
-            //       + " row"+(touchX - presentParts.row_block1))
         }
         return flag
     }
@@ -231,7 +248,7 @@ class boardview(context: Context?,attrs: AttributeSet?) :
             }
         }
 
-        if(num == 2 && play1_begin)play1_begin = false
+        if(num == 2 && play1_begin) play1_begin = false
         else if(num == 3 && play2_begin) play2_begin = false
         parts[num - 2][presentParts.kinds].setUsable(false)
         invalidate()

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.MotionEvent
 import android.view.MotionEvent.*
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -67,8 +68,8 @@ class MainActivity : AppCompatActivity() {
     fun running(){
         while(timing == 1){
             timing = 0
-            if(turn == 2)play1_playable = myView.set_state(2)
-            if(turn == 3)play2_playable = myView.set_state(3)
+            play1_playable = myView.set_state(2)
+            play2_playable = myView.set_state(3)
             declaration_skip()
             result(play1_playable, play2_playable)
         }
@@ -111,23 +112,13 @@ class MainActivity : AppCompatActivity() {
         fragmentTransaction.commit()
     }
 
-    fun skip_player(num:Int){
-        if(num == 2) {
-            play1_playable = false
-            turn = 3
-        } else {
-            play2_playable = false
-            turn = 2
-        }
-    }
-
     fun declaration_skip(){
-        if((play1_playable != play1_preflag) && !play1_playable)
-            Toast.makeText(applicationContext, "player1スキップ", Toast.LENGTH_SHORT).show()
-        if((play2_playable != play2_preflag) && !play2_playable)
-            Toast.makeText(applicationContext, "player2スキップ", Toast.LENGTH_SHORT).show()
-        play1_preflag = play1_playable
-        play2_preflag = play2_playable
+            if((play1_playable != play1_preflag) && !play1_playable)
+                Toast.makeText(applicationContext, "player1はもう置けません", Toast.LENGTH_SHORT).show()
+            play1_preflag = play1_playable
+            if ((play2_playable != play2_preflag) && !play2_playable)
+                Toast.makeText(applicationContext, "player2はもう置けません", Toast.LENGTH_SHORT).show()
+            play2_preflag = play2_playable
     }
 
     fun result(player1:Boolean, player2: Boolean){
@@ -135,7 +126,8 @@ class MainActivity : AppCompatActivity() {
         if(!player1 && !player2){
             var winner = ""
             if(minus < 0) winner = "player2"
-            else winner = "player1"
+            else if(minus > 0) winner = "player1"
+            else winner = "none"
             alertDialog = AlertDialog.Builder(this@MainActivity)
                 .setTitle(winner+" wins " +Math.abs(minus) + "point")
                 .setCancelable(false)
