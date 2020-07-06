@@ -175,16 +175,16 @@ class boardview(context: Context?,attrs: AttributeSet?) :
             }
             if (flag_break) break
         }
-        if(play1_begin || play2_begin) flag_able = check_able_set3(turn, differ_line, differ_row, line, row)
+        if(play1_begin || play2_begin) flag_able = check_able_set3(turn, differ_line, differ_row)
         else {
-            if (non_cyan_count >= box_block.cyan_count) flag_able = false
+            if (non_cyan_count == box_block.cyan_count) flag_able = false
             else if(flag_break) flag_able = false
-            else flag_able = check_able_set3(turn, differ_line, differ_row, line, row)
+            else flag_able = check_able_set3(turn, differ_line, differ_row)
         }
         return flag_able
     }
 
-    fun check_able_set3(turn: Int, Dline: Int, Drow:Int, line: Int, row: Int):Boolean{
+    fun check_able_set3(turn: Int, Dline: Int, Drow:Int):Boolean{
         var count = 0
         var flag = false
         for (i in box_block.topEdge..box_block.bottomEdge) {
@@ -193,7 +193,7 @@ class boardview(context: Context?,attrs: AttributeSet?) :
                 val now_row = Drow + j
                 var tmp = box_block.data[i][j]
                 if (now_line < 3 || now_line > 16 || now_row < 3 || now_row > 16) {
-                    if (tmp > 1 && tmp < 6) count++
+                    if (tmp < 6 && tmp > 1) count++
                 } else {
                     var content = box[now_line][now_row]
                     if(play1_begin){
@@ -215,6 +215,7 @@ class boardview(context: Context?,attrs: AttributeSet?) :
         }
         else return false
     }
+
 
     fun dup_cyan_color2(line:Int, row:Int, num: Int):Int{
         if(box[line][row] == num) return 0

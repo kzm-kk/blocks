@@ -113,12 +113,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun declaration_skip(){
-            if((play1_playable != play1_preflag) && !play1_playable)
-                Toast.makeText(applicationContext, "player1はもう置けません", Toast.LENGTH_SHORT).show()
-            play1_preflag = play1_playable
-            if ((play2_playable != play2_preflag) && !play2_playable)
-                Toast.makeText(applicationContext, "player2はもう置けません", Toast.LENGTH_SHORT).show()
-            play2_preflag = play2_playable
+        var play1_flag = (play1_playable != play1_preflag) && !play1_playable
+        var play2_flag = (play2_playable != play2_preflag) && !play2_playable
+            if(play1_flag && play2_flag)
+                Toast.makeText(applicationContext, "全プレイヤーがもう置けません", Toast.LENGTH_SHORT).show()
+        else {
+                if (play1_flag) {
+                    Toast.makeText(applicationContext, "player1はもう置けません", Toast.LENGTH_SHORT).show()
+                    turn = 3
+                    partsExpansion()
+                }
+
+                if (play2_flag) {
+                    Toast.makeText(applicationContext, "player2はもう置けません", Toast.LENGTH_SHORT).show()
+                    turn = 2
+                    partsExpansion()
+                }
+            }
+        play1_preflag = play1_playable
+        play2_preflag = play2_playable
     }
 
     fun result(player1:Boolean, player2: Boolean){
@@ -152,9 +165,9 @@ class MainActivity : AppCompatActivity() {
             }
         }*/
 
-red_block = myView.count_block(2)
-blue_block = myView.count_block(3)
-textView.setText("red:" + red_block.toString() + "blue:" + blue_block.toString())
+    red_block = myView.count_block(2)
+    blue_block = myView.count_block(3)
+    textView.setText("red:" + red_block.toString() + "blue:" + blue_block.toString())
     }
 
     fun restart_game(){
