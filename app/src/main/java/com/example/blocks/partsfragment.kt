@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.parts_detail.*
 
 
-class partsfragment: Fragment()/*,View.OnTouchListener*/ {
+class partsfragment: Fragment(){
     public fun newInstance(str:String):partsfragment{
         var fragment:partsfragment = partsfragment()
         var barg:Bundle = Bundle()
