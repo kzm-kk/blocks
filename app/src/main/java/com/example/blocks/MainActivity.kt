@@ -18,9 +18,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(i)
         }
         CPU.setOnClickListener {
-            /*var i = Intent(applicationContext, CpuActivity::class.java)
+            var i = Intent(applicationContext, CpuActivity::class.java)
             startActivity(i)
-            */
+
         }
     }
 }
