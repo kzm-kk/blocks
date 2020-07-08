@@ -255,6 +255,28 @@ class boardview(context: Context?,attrs: AttributeSet?) :
         invalidate()
     }
 
+    fun setblock3(num: Int, line: Int, row: Int){
+        val differ_line = line - presentParts.line_block1
+        val differ_row = row - presentParts.row_block1
+        for (i in presentParts.topEdge..presentParts.bottomEdge) {
+            for (j in presentParts.leftEdge..presentParts.rightEdge) {
+                val now_line = differ_line + i
+                val now_row = differ_row + j
+                var tmp = box[now_line][now_row]
+                if (presentParts.data[i][j] < 2 || presentParts.data[i][j] > 5)
+                    box[now_line][now_row] = Math.max(tmp, 0)
+
+                else box[now_line][now_row] = Math.max(tmp, presentParts.data[i][j])
+            }
+        }
+
+        if(num == 2 && play1_begin) play1_begin = false
+        else if(num == 3 && play2_begin) play2_begin = false
+        parts[num - 2][presentParts.kinds].setUsable(false)
+        invalidate()
+    }
+
+
     fun count_block(num:Int):Int{
         var count = 0
         for(i in 3..16){
@@ -266,7 +288,6 @@ class boardview(context: Context?,attrs: AttributeSet?) :
     }
 
     fun restart(){
-
         for(i in 0..1){
             for(j in 0..20){
                 parts[i][j].setUsable(true)
@@ -283,6 +304,10 @@ class boardview(context: Context?,attrs: AttributeSet?) :
         play1_begin = true
         play2_begin = true
         invalidate()
+    }
+
+    fun return_state(turn: Int, blocknum: Int, rad: Int, line: Int, row: Int):Boolean{
+        return box_state[turn][blocknum][rad][line][row]
     }
 
 }

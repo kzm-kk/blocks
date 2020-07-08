@@ -67,6 +67,7 @@ class CpuActivity : AppCompatActivity() {
             play2_playable = myView.set_state(3)
             declaration_skip()
             result(play1_playable, play2_playable)
+            if(turn == 3) auto_thinking()
         }
     }
 
@@ -146,23 +147,83 @@ class CpuActivity : AppCompatActivity() {
         }
     }
 
-    fun auto_play(){
-        /*if (parts[turn - 2][presentParts.kinds].getUsable()) {
-            if (Opened && myView.recheck_able_set(pointX, pointY, turn - 2)) {
-                Opened = false
-                myView.setblock3(turn)
-                presentParts.setUsable(false)
-                if (turn == 2 && play2_playable) turn = 3
-                else if (turn == 3 && play1_playable) turn = 2
-                timing = 1
-                Handler().postDelayed({ turngo() }, delaytime.toLong())
-                partsExpansion()
+    fun auto_thinking(){
+        var flag_break = false
+        var sendbox = Array(7, {i -> Array(7, {i -> 0})})
+        var tmpbox = Array(7, {i -> Array(7, {i -> 0})})
+        var line = 0
+        var row = 0
+        var kind = 0
+        var rad = 0
+        var reverse = false
+        for(h in 0..20) {
+            if (parts[turn - 2][h].getUsable()) {
+                for(i in 3..16){
+                    for(j in 3..16){
+                        for (k in 0..7) {
+                            if(myView.return_state(turn, h, k, i, j)){
+                                flag_break = true
+                                rad = k
+                                break
+                            }
+                        }
+                        if (flag_break){
+                            row = j
+                            break
+                        }
+                    }
+                    if (flag_break){
+                        line = i
+                        break
+                    }
+                }
             }
-        }*/
+            if(flag_break) {
+                kind = h
+                break
+            }
+        }
+        for(i in 0..6){
+            for(j in 0..6){
+                sendbox[i][j] = parts[turn - 2][kind].data[i][j]
+            }
+        }
+        for (i in 0..rad) {
+            if (rad != 0) {
+                for (j in 0..6) {
+                    for (k in 0..6) tmpbox[6 - k][j] = sendbox[j][k]
+                }
+                for (j in 0..6) {
+                    for (k in 0..6) sendbox[j][k] = tmpbox[j][k]
+                }
+                if (rad == 4) {
+                    reverse = true
+                    for (j in 0..6) {
+                        for (k in 0..6) tmpbox[j][k] = sendbox[j][6 - k]
+                    }
+                    for (j in 0..6) {
+                        for (k in 0..6) sendbox[j][k] = tmpbox[j][k]
+                    }
 
+                }
+            }
+        }
+        rad = rad % 4 * 90
+        presentParts.changekind(turn, sendbox, rad, reverse)
+        presentParts.setUsable(true)
+        Opened = false
+        myView.setblock3(turn, line, row)
+        presentParts.setUsable(false)
+        if (turn == 2 && play2_playable) turn = 3
+        else if (turn == 3 && play1_playable) turn = 2
+        timing = 1
+        Handler().postDelayed({ turngo() }, delaytime.toLong())
+        partsExpansion()
         red_block = myView.count_block(2)
         blue_block = myView.count_block(3)
         textView.setText("red:" + red_block.toString() + "blue:" + blue_block.toString())
+
+
     }
 
     fun restart_game(){
