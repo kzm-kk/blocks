@@ -37,7 +37,7 @@ class VersusActivity : AppCompatActivity() {
             //auto_play()
         }
         button3.setOnClickListener {
-            alertDialog = AlertDialog.Builder(applicationContext)
+            alertDialog = AlertDialog.Builder(this@VersusActivity)
                 .setTitle("ゲームを最初からにしますか？")
                 .setPositiveButton(
                     "はい",
@@ -47,6 +47,7 @@ class VersusActivity : AppCompatActivity() {
                     DialogInterface.OnClickListener { dialog, which -> alertDialog.dismiss() })
                 .show()
         }
+        restart_game()
         Handler().postDelayed({ turngo() }, delaytime.toLong())
         partsExpansion()
     }
@@ -136,7 +137,7 @@ class VersusActivity : AppCompatActivity() {
             if(minus < 0) winner = "player2"
             else if(minus > 0) winner = "player1"
             else winner = "none"
-            alertDialog = AlertDialog.Builder(applicationContext)
+            alertDialog = AlertDialog.Builder(this@VersusActivity)
                 .setTitle(winner+" wins " +Math.abs(minus) + "point")
                 .setCancelable(false)
                 .setPositiveButton(
@@ -185,7 +186,7 @@ class VersusActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        alertDialog = AlertDialog.Builder(applicationContext)
+        alertDialog = AlertDialog.Builder(this@VersusActivity)
             .setTitle("ゲームを終了しますか？")
             .setPositiveButton(
                 "はい",

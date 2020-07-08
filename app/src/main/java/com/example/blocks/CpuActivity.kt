@@ -34,10 +34,10 @@ class CpuActivity : AppCompatActivity() {
         setContentView(R.layout.activity_versus)
         myView = findViewById(R.id.view1)
         button.setOnClickListener{
-            //auto_play()
+            if(Opened)auto_thinking(2)
         }
         button3.setOnClickListener {
-            alertDialog = AlertDialog.Builder(applicationContext)
+            alertDialog = AlertDialog.Builder(this@CpuActivity)
                 .setTitle("ゲームを最初からにしますか？")
                 .setPositiveButton(
                     "はい",
@@ -47,6 +47,7 @@ class CpuActivity : AppCompatActivity() {
                     DialogInterface.OnClickListener { dialog, which -> alertDialog.dismiss() })
                 .show()
         }
+        restart_game()
         Handler().postDelayed({ turngo() }, delaytime.toLong())
         partsExpansion()
     }
@@ -67,7 +68,7 @@ class CpuActivity : AppCompatActivity() {
             play2_playable = myView.set_state(3)
             declaration_skip()
             result(play1_playable, play2_playable)
-            if(turn == 3) auto_thinking()
+            if(turn == 3) auto_thinking(3)
         }
     }
 
@@ -86,7 +87,6 @@ class CpuActivity : AppCompatActivity() {
                         else if (turn == 3 && play1_playable) turn = 2
                         timing = 1
                         Handler().postDelayed({ turngo() }, delaytime.toLong())
-                        partsExpansion()
                     }
                 }
             }
@@ -137,7 +137,7 @@ class CpuActivity : AppCompatActivity() {
             if(minus < 0) winner = "player2"
             else if(minus > 0) winner = "player1"
             else winner = "none"
-            alertDialog = AlertDialog.Builder(applicationContext)
+            alertDialog = AlertDialog.Builder(this@CpuActivity)
                 .setTitle(winner+" wins " +Math.abs(minus) + "point")
                 .setCancelable(false)
                 .setPositiveButton(
@@ -147,7 +147,8 @@ class CpuActivity : AppCompatActivity() {
         }
     }
 
-    fun auto_thinking(){
+    fun auto_thinking(turn : Int){
+        var usable = false
         var flag_break = false
         var sendbox = Array(7, {i -> Array(7, {i -> 0})})
         var tmpbox = Array(7, {i -> Array(7, {i -> 0})})
@@ -156,12 +157,13 @@ class CpuActivity : AppCompatActivity() {
         var kind = 0
         var rad = 0
         var reverse = false
-        for(h in 0..20) {
-            if (parts[turn - 2][h].getUsable()) {
+        for(h in 20 downTo 0) {
+            usable = parts[turn - 2][h].getUsable()
+            if (usable) {
                 for(i in 3..16){
                     for(j in 3..16){
                         for (k in 0..7) {
-                            if(myView.return_state(turn, h, k, i, j)){
+                            if(myView.return_state(turn-2, h, k, i, j)){
                                 flag_break = true
                                 rad = k
                                 break
@@ -183,47 +185,49 @@ class CpuActivity : AppCompatActivity() {
                 break
             }
         }
-        for(i in 0..6){
-            for(j in 0..6){
-                sendbox[i][j] = parts[turn - 2][kind].data[i][j]
+        var check = (line < 20 && line > -1 && row < 20 && row > -1)
+        if(usable && check) {
+            for (i in 0..6) {
+                for (j in 0..6) {
+                    sendbox[i][j] = parts[turn - 2][kind].data[i][j]
+                    if (sendbox[i][j] == 2) sendbox[i][j] = turn
+                }
             }
-        }
-        for (i in 0..rad) {
-            if (rad != 0) {
-                for (j in 0..6) {
-                    for (k in 0..6) tmpbox[6 - k][j] = sendbox[j][k]
-                }
-                for (j in 0..6) {
-                    for (k in 0..6) sendbox[j][k] = tmpbox[j][k]
-                }
-                if (rad == 4) {
-                    reverse = true
+            for (i in 0..rad) {
+                if (rad != 0) {
                     for (j in 0..6) {
-                        for (k in 0..6) tmpbox[j][k] = sendbox[j][6 - k]
+                        for (k in 0..6) tmpbox[6 - k][j] = sendbox[j][k]
                     }
                     for (j in 0..6) {
                         for (k in 0..6) sendbox[j][k] = tmpbox[j][k]
                     }
+                    if (rad == 4) {
+                        reverse = true
+                        for (j in 0..6) {
+                            for (k in 0..6) tmpbox[j][k] = sendbox[j][6 - k]
+                        }
+                        for (j in 0..6) {
+                            for (k in 0..6) sendbox[j][k] = tmpbox[j][k]
+                        }
 
+                    }
                 }
             }
+            rad = rad % 4 * 90
+            presentParts.changekind(kind, sendbox, rad, reverse)
+            presentParts.setUsable(true)
+            Opened = false
+            myView.setblock3(turn, line, row)
+            presentParts.setUsable(false)
+            if (turn == 2 && play2_playable) this.turn = 3
+            else if (turn == 3 && play1_playable) this.turn = 2
+            timing = 1
+            Handler().postDelayed({ turngo() }, delaytime.toLong())
+            partsExpansion()
         }
-        rad = rad % 4 * 90
-        presentParts.changekind(turn, sendbox, rad, reverse)
-        presentParts.setUsable(true)
-        Opened = false
-        myView.setblock3(turn, line, row)
-        presentParts.setUsable(false)
-        if (turn == 2 && play2_playable) turn = 3
-        else if (turn == 3 && play1_playable) turn = 2
-        timing = 1
-        Handler().postDelayed({ turngo() }, delaytime.toLong())
-        partsExpansion()
         red_block = myView.count_block(2)
         blue_block = myView.count_block(3)
         textView.setText("red:" + red_block.toString() + "blue:" + blue_block.toString())
-
-
     }
 
     fun restart_game(){
@@ -246,7 +250,7 @@ class CpuActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        alertDialog = AlertDialog.Builder(applicationContext)
+        alertDialog = AlertDialog.Builder(this@CpuActivity)
             .setTitle("ゲームを終了しますか？")
             .setPositiveButton(
                 "はい",
