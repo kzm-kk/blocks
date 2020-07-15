@@ -109,8 +109,8 @@ class VersusActivity : AppCompatActivity() {
     }
 
     fun declaration_skip(){
-        var play1_flag = (play1_playable != play1_preflag) && !play1_playable
-        var play2_flag = (play2_playable != play2_preflag) && !play2_playable
+        var play1_flag = (play1_playable != play1_preflag) || !play1_playable
+        var play2_flag = (play2_playable != play2_preflag) || !play2_playable
         if(play1_flag && play2_flag)
             Toast.makeText(applicationContext, "全プレイヤーがもう置けません", Toast.LENGTH_SHORT).show()
         else {
