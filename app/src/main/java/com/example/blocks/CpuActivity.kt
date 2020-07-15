@@ -32,7 +32,9 @@ class CpuActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_versus)
+
         myView = findViewById(R.id.view1)
+
         button.setOnClickListener{
             if(Opened)auto_thinking(2)
         }
@@ -185,8 +187,8 @@ class CpuActivity : AppCompatActivity() {
                 break
             }
         }
-        var check = (line < 20 && line > -1 && row < 20 && row > -1)
-        if(usable && check) {
+        //var check = (line < 20 && line > -1 && row < 20 && row > -1)
+        if(usable) {
             for (i in 0..6) {
                 for (j in 0..6) {
                     sendbox[i][j] = parts[turn - 2][kind].data[i][j]
