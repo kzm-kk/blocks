@@ -5,6 +5,7 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.MotionEvent
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -162,6 +163,9 @@ class CpuActivity : AppCompatActivity() {
         for(h in 20 downTo 0) {
             usable = parts[turn - 2][h].getUsable()
             if (usable) {
+                rad = 0
+                reverse = false
+                kind = 0
                 for(i in 3..16){
                     for(j in 3..16){
                         for (k in 0..7) {
@@ -187,8 +191,7 @@ class CpuActivity : AppCompatActivity() {
                 break
             }
         }
-        //var check = (line < 20 && line > -1 && row < 20 && row > -1)
-        if(usable) {
+        if(usable && (kind < 21)) {
             for (i in 0..6) {
                 for (j in 0..6) {
                     sendbox[i][j] = parts[turn - 2][kind].data[i][j]
@@ -196,14 +199,14 @@ class CpuActivity : AppCompatActivity() {
                 }
             }
             for (i in 0..rad) {
-                if (rad != 0) {
+                if (i != 0) {
                     for (j in 0..6) {
                         for (k in 0..6) tmpbox[6 - k][j] = sendbox[j][k]
                     }
                     for (j in 0..6) {
                         for (k in 0..6) sendbox[j][k] = tmpbox[j][k]
                     }
-                    if (rad == 4) {
+                    if (i == 4) {
                         reverse = true
                         for (j in 0..6) {
                             for (k in 0..6) tmpbox[j][k] = sendbox[j][6 - k]
@@ -215,11 +218,12 @@ class CpuActivity : AppCompatActivity() {
                     }
                 }
             }
-            rad = rad % 4 * 90
+            rad = (rad % 4) * 90
             presentParts.changekind(kind, sendbox, rad, reverse)
             presentParts.setUsable(true)
             Opened = false
             myView.setblock3(turn, line, row)
+            Log.v("debug", "kind:"+kind +" rad:" +rad + " rev:" +reverse)
             presentParts.setUsable(false)
             if (turn == 2 && play2_playable) this.turn = 3
             else if (turn == 3 && play1_playable) this.turn = 2

@@ -255,16 +255,6 @@ class boardview(context: Context?,attrs: AttributeSet?) :
         invalidate()
     }
 
-    fun recheck_able_set(line: Int, row: Int, num: Int):Boolean{
-        var flag = false
-        if(line < 20 || row < 20) {
-            var index_2 = presentParts.radian / 90
-            if (presentParts.reverse) index_2 += 4
-            if (box_state[num][presentParts.kinds][index_2][line][row]) flag = true
-        }
-        return flag
-    }
-
     fun setblock3(num: Int, line: Int, row: Int){
         val differ_line = line - presentParts.line_block1
         val differ_row = row - presentParts.row_block1
