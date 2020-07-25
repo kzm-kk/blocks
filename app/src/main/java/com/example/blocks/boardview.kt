@@ -77,7 +77,7 @@ class boardview(context: Context?,attrs: AttributeSet?) :
             canvas.drawCircle((75.5 * 4.5).toFloat(),(75.5 * 4.5).toFloat(),20F,paint)
         }
         if(play2_begin){
-            paint.setColor(Color.parseColor("#ee7800"))
+            paint.setColor(Color.parseColor("#884898"))
             paint.style = Paint.Style.FILL_AND_STROKE
             canvas.drawCircle((75.5 * 9.5).toFloat(),(75.5 * 9.5).toFloat(),20F,paint)
         }
@@ -89,7 +89,7 @@ class boardview(context: Context?,attrs: AttributeSet?) :
             num == 0 -> paint.color = Color.GRAY
             num == 1 -> paint.color = Color.CYAN
             num == 2 -> paint.color = Color.parseColor("#ee7800")
-            num == 3 -> paint.color = Color.parseColor("#ee7800")
+            num == 3 -> paint.color = Color.parseColor("#884898")
             else -> paint.color = Color.BLACK
         }
     }
