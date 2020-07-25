@@ -72,12 +72,12 @@ class boardview(context: Context?,attrs: AttributeSet?) :
             }
         }
         if(play1_begin){
-            paint.setColor(Color.RED)
+            paint.setColor(Color.parseColor("#ee7800"))
             paint.style = Paint.Style.FILL_AND_STROKE
             canvas.drawCircle((75.5 * 4.5).toFloat(),(75.5 * 4.5).toFloat(),20F,paint)
         }
         if(play2_begin){
-            paint.setColor(Color.BLUE)
+            paint.setColor(Color.parseColor("#ee7800"))
             paint.style = Paint.Style.FILL_AND_STROKE
             canvas.drawCircle((75.5 * 9.5).toFloat(),(75.5 * 9.5).toFloat(),20F,paint)
         }
@@ -88,8 +88,8 @@ class boardview(context: Context?,attrs: AttributeSet?) :
         when {
             num == 0 -> paint.color = Color.GRAY
             num == 1 -> paint.color = Color.CYAN
-            num == 2 -> paint.color = Color.RED
-            num == 3 -> paint.color = Color.BLUE
+            num == 2 -> paint.color = Color.parseColor("#ee7800")
+            num == 3 -> paint.color = Color.parseColor("#ee7800")
             else -> paint.color = Color.BLACK
         }
     }

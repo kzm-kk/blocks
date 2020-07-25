@@ -32,7 +32,8 @@
         android:layout_height="wrap_content"
         android:text="ブロック変更"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/button_state"/>
 
     <Button
         android:id="@+id/switchLR"
@@ -40,7 +41,8 @@
         android:layout_height="wrap_content"
         android:text="左右反転"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/button_state"/>
 
     <Button
         android:id="@+id/switchTB"
@@ -48,7 +50,8 @@
         android:layout_height="wrap_content"
         android:text="上下反転"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchLR" />
+        app:layout_constraintTop_toBottomOf="@+id/switchLR"
+        android:background="@drawable/button_state"/>
 
     <Button
         android:id="@+id/spinL"
@@ -56,7 +59,8 @@
         android:layout_height="wrap_content"
         android:text="左回転"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
+        app:layout_constraintTop_toBottomOf="@+id/button2"
+        android:background="@drawable/button_state"/>
 
     <Button
         android:id="@+id/spinR"
@@ -64,5 +68,6 @@
         android:layout_height="wrap_content"
         android:text="右回転"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinL" />
+        app:layout_constraintTop_toBottomOf="@+id/spinL"
+        android:background="@drawable/button_state"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

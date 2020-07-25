@@ -61,8 +61,8 @@ class blockview(context:Context?, attrs:AttributeSet?) : View(context,attrs){
         when {
             num == 0 -> paint.color = Color.GRAY
             num == 1 -> paint.color = Color.CYAN
-            num == 2 -> paint.color = Color.RED
-            num == 3 -> paint.color = Color.BLUE
+            num == 2 -> paint.color = Color.parseColor("#ee7800")
+            num == 3 -> paint.color = Color.parseColor("#884898")
             else -> paint.color = Color.BLACK
         }
     }
